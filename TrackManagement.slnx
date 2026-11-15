@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/TrackManagement.Api/TrackManagement.Api.csproj" />
+    <Project Path="backend/TrackManagement.Application/TrackManagement.Application.csproj" />
+    <Project Path="backend/TrackManagement.Domain/TrackManagement.Domain.csproj" />
+    <Project Path="backend/TrackManagement.Infrastructure/TrackManagement.Infrastructure.csproj" />
+  </Folder>
+</Solution>
