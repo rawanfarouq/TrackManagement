@@ -21,10 +21,11 @@ The backend follows Clean Architecture, divided into four projects:
 
 ## Current Progress
 
-- .NET solution initialized.
-- Four backend projects created.
-- Project references configured.
-- Initial solution build successful.
+- [x] .NET solution and Clean Architecture setup
+- [x] Domain entities and status enums
+- [ ] EF Core and SQL Server integration
+- [ ] REST API and JWT authentication
+- [ ] React frontend
 
 ## Setup and Running Instructions
 
