@@ -14,4 +14,5 @@ public interface IArtistRepository
 
     Task<IReadOnlyList<Artist>> GetAllAsync(
         CancellationToken cancellationToken = default);
+
 }

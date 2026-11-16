@@ -18,4 +18,18 @@ public interface ITrackService
     Task<TrackDetailResponse?> GetByIdAsync(
         int id,
         CancellationToken cancellationToken = default);
+
+    
+    Task<TrackResponse?> UpdateStatusAsync(
+        int id,
+        UpdateTrackStatusRequest request,
+        CancellationToken cancellationToken = default);
+
+    
+    Task<TrackDetailResponse?> DistributeAsync(
+        int id,
+        DistributeTrackRequest request,
+        CancellationToken cancellationToken = default);
+    
+    
 }

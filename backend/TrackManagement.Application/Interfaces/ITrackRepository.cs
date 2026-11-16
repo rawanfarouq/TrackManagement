@@ -32,4 +32,23 @@ public interface ITrackRepository
     Task<bool> IsrcExistsAsync(
         string isrc,
         CancellationToken cancellationToken = default);
+
+    Task<Track?> UpdateStatusAsync(
+        int id,
+        TrackStatus status,
+        CancellationToken cancellationToken = default);
+
+    
+    Task<Track?> GetForDistributionAsync(
+        int id,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<DSP>> GetDspsByIdsAsync(
+        IReadOnlyCollection<int> dspIds,
+        CancellationToken cancellationToken = default);
+
+    Task SaveChangesAsync(
+        CancellationToken cancellationToken = default);
+    
+        
 }

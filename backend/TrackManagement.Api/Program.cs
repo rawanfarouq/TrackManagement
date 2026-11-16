@@ -31,6 +31,13 @@ builder.Services.AddScoped<ITrackRepository, TrackRepository>();
 builder.Services.AddScoped<ITrackService, TrackService>();
 
 
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer();
+
+builder.Services.AddAuthorization();
+
+
+
 // Register controllers and OpenAPI
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -52,11 +59,15 @@ if (app.Environment.IsDevelopment())
     await DatabaseSeeder.SeedAsync(db);
 }
 
+
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 // 5. Start the application
 app.Run();

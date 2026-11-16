@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TrackManagement.Application.DTOs.Tracks;
 using TrackManagement.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TrackManagement.Api.Controllers;
 
@@ -83,4 +84,80 @@ public class TracksController : ControllerBase
 
         return Ok(track);
     }
+
+
+    // PATCH /api/tracks/{id}/status
+    [HttpPatch("{id:int}/status")]
+    public async Task<ActionResult<TrackResponse>> UpdateStatus(
+        int id,
+        [FromBody] UpdateTrackStatusRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var updatedTrack = await _trackService.UpdateStatusAsync(
+                id, request, cancellationToken);
+
+            if (updatedTrack is null)
+            {
+                return NotFound(new
+                {
+                    message = "Track not found."
+                });
+            }
+
+            return Ok(updatedTrack);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+
+    // POST /api/tracks/{id}/distribute
+    [Authorize]
+    [HttpPost("{id:int}/distribute")]
+    public async Task<ActionResult<TrackDetailResponse>> Distribute(
+        int id,
+        [FromBody] DistributeTrackRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _trackService.DistributeAsync(
+                id, request, cancellationToken);
+
+            if (result is null)
+            {
+                return NotFound(new
+                {
+                    message = "Track not found."
+                });
+            }
+
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+            when (ex.Message ==
+                "Track has already been submitted to one or more selected DSPs.")
+        {
+            return Conflict(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+
 }

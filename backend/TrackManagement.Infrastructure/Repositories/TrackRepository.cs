@@ -94,4 +94,62 @@ public class TrackRepository : ITrackRepository
             t => t.Isrc == isrc,
             cancellationToken);
     }
+
+
+    public async Task<Track?> UpdateStatusAsync(
+        int id,
+        TrackStatus status,
+        CancellationToken cancellationToken = default)
+    {
+        var track = await _db.Tracks
+            .Include(t => t.Artist)
+            .FirstOrDefaultAsync(
+                t => t.Id == id,
+                cancellationToken);
+
+        if (track is null)
+        {
+            return null;
+        }
+
+        track.Status = status;
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return track;
+    }
+
+
+    // Get a track for modification, including its distributions
+    public async Task<Track?> GetForDistributionAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _db.Tracks
+            .Include(t => t.Artist)
+            .Include(t => t.TrackDistributions)
+            .FirstOrDefaultAsync(
+                t => t.Id == id,
+                cancellationToken);
+    }
+
+    // Get the selected DSPs from SQL Server
+    public async Task<IReadOnlyList<DSP>> GetDspsByIdsAsync(
+        IReadOnlyCollection<int> dspIds,
+        CancellationToken cancellationToken = default)
+    {
+        return await _db.DSPs
+            .AsNoTracking()
+            .Where(d => dspIds.Contains(d.Id))
+            .ToListAsync(cancellationToken);
+    }
+
+    // Save pending changes
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+
 }

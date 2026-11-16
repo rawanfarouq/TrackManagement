@@ -171,11 +171,12 @@ Further endpoint and edge-case testing will be performed as development continue
 - [x] Track DTOs, service, and repository
 - [x] Track creation, listing, filtering, and details endpoints
 - [x] Initial Postman testing
-- [ ] Track status update endpoint
-- [ ] Track distribution endpoint
-- [ ] JWT authentication and authorization
+- [x] All 7 required REST API endpoints
+- [x] JWT authentication and protected distribution endpoint
+- [x] Postman API testing
 - [ ] React frontend
-- [ ] Final validation, security testing, and documentation
+- [ ] Final security review and testing
+- [ ] Final documentation and submission
 
 ## Frontend
 
@@ -188,7 +189,47 @@ Frontend setup and execution instructions will be added after implementation.
 
 ## JWT Authentication
 
-JWT authentication will be implemented to protect at least one API endpoint. Instructions for obtaining and using a JWT token will be added once authentication is complete.
+The application uses JWT Bearer authentication to protect the track distribution endpoint.
+
+**Protected endpoint:**
+
+`POST /api/tracks/{id}/distribute`
+
+### Generate a Development JWT
+
+From the repository root, run:
+
+```powershell
+dotnet user-jwts create --project backend/TrackManagement.Api --name LocalTester --valid-for 1d
+```
+
+The command generates a local development JWT that can be used to test protected API endpoints.
+
+### Using JWT in Postman
+
+1. Open the track distribution POST request.
+2. Select **Authorization → Bearer Token**.
+3. Paste the generated JWT into the Token field.
+4. Send the request with the selected DSP IDs.
+
+Example request body:
+
+```json
+{
+  "dspIds": [1, 2]
+}
+```
+
+### Authentication Testing
+
+The following scenarios were tested using Postman:
+
+- Valid JWT: `200 OK` for a valid distribution request.
+- Missing JWT: `401 Unauthorized`.
+- Duplicate distribution: `409 Conflict`.
+- Invalid DSP ID: `400 Bad Request`.
+
+Development JWTs are intended for local testing only. The signing keys and generated tokens must not be committed to source control. A production application would require a proper authentication and user-management solution.
 
 ## Development Decisions
 
