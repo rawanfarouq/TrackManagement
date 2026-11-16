@@ -1,43 +1,44 @@
+
 using Microsoft.EntityFrameworkCore;
 using TrackManagement.Infrastructure.Data;
+using TrackManagement.Application.Interfaces;
+using TrackManagement.Application.Services;
+using TrackManagement.Infrastructure.Repositories;
 
+// 1. Create the application builder
 var builder = WebApplication.CreateBuilder(args);
 
+// 2. Register services (Dependency Injection)
 
+// Register SQL Server DbContext
 builder.Services.AddDbContext<TrackManagementDbContext>(
-    options =>
-        options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException(
-                "Database connection string not found."
-            )
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException(
+            "Database connection string not found."
         )
+    )
 );
 
+// Register repositories
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 
-// Add services to the container.
+// Register application services
+builder.Services.AddScoped<IArtistService, ArtistService>();
 
+// Register controllers and OpenAPI
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// 3. Build the application AFTER registering services
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 4. Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-}
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-
-if (app.Environment.IsDevelopment())
-{
+    // Seed database with sample data
     using var scope = app.Services.CreateScope();
 
     var db = scope.ServiceProvider
@@ -46,7 +47,11 @@ if (app.Environment.IsDevelopment())
     await DatabaseSeeder.SeedAsync(db);
 }
 
-app.Run();
+app.UseHttpsRedirection();
 
+app.UseAuthorization();
 
+app.MapControllers();
+
+// 5. Start the application
 app.Run();

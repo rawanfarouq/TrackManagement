@@ -26,4 +26,6 @@ To be completed after implementing and reviewing authentication, input validatio
 
 ## 3. What did AI get wrong that I had to fix, and why?
 
-To be completed when an actual issue in AI-generated code is identified, investigated, and corrected during development.
+During implementation, the API initially failed at runtime because the dependency injection services were registered after builder.Build().
+
+I inspected Program.cs, identified the incorrect initialization order, and moved the service registrations before builder.Build(). After the correction, I successfully started the API and tested the Artist endpoints using Postman.
