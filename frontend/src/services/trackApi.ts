@@ -1,5 +1,5 @@
 
-import type { Track } from "../types/track";
+import type { Track, TrackDetail } from "../types/track";
 
 const API_BASE_URL = "http://localhost:5150";
 
@@ -13,3 +13,17 @@ export async function getTracks(): Promise<Track[]> {
   //tells TypeScript that the function asynchronously returns an array of tracks
   return response.json() as Promise<Track[]>;
 }
+
+
+export async function getTrackById(
+  id: number
+): Promise<TrackDetail> {
+  const response = await fetch(`${API_BASE_URL}/api/tracks/${id}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch track details");
+  }
+
+  return response.json() as Promise<TrackDetail>;
+}
+

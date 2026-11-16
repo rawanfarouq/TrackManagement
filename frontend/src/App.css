@@ -333,4 +333,146 @@
   .brand-label {
     display: none;
   }
+
+
+/* Clickable track titles */
+.track-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #30354b;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+  text-align: left;
+}
+
+.track-link:hover {
+  color: #6754d8;
+  text-decoration: underline;
+}
+
+/* Track Detail */
+.back-button {
+  background: none;
+  border: none;
+  color: #6754d8;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 25px;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+.detail-card {
+  background: white;
+  border: 1px solid #e9edf5;
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(30, 39, 77, 0.035);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.detail-header h1 {
+  margin: 0;
+  font-size: 30px;
+  color: #242941;
+}
+
+.detail-card h2 {
+  color: #242941;
+  font-size: 20px;
+  margin: 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid #edf0f5;
+}
+
+.detail-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.detail-label {
+  color: #8a92a4;
+  font-size: 12px;
+}
+
+.detail-grid strong {
+  color: #30354b;
+  font-size: 14px;
+}
+
+.distribution-list {
+  margin-top: 25px;
+}
+
+.distribution-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 19px 0;
+  border-top: 1px solid #edf0f5;
+}
+
+.distribution-row strong {
+  color: #30354b;
+  font-size: 14px;
+}
+
+.distribution-date {
+  color: #98a0b0;
+  font-size: 12px;
+  margin: 7px 0 0;
+}
+
+/* Distribution status colors */
+.status-pending {
+  color: #a97513;
+  background: #fff4dc;
+}
+
+.status-live {
+  color: #16845a;
+  background: #e2f7ed;
+}
+
+.status-rejected {
+  color: #bd4451;
+  background: #ffe8eb;
+}
+
+@media (max-width: 600px) {
+  .detail-card {
+    padding: 20px;
+  }
+
+  .detail-header {
+    flex-direction: column;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 }

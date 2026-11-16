@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getTracks } from "./services/trackApi";
 import type { Track } from "./types/track";
+import TrackDetail from "./components/TrackDetail";
 import "./App.css";
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
     useState<Track["status"] | "all">("all");
 
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedTrackId, setSelectedTrackId] = useState<number | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -59,6 +62,29 @@ function App() {
 
   const countByStatus = (status: Track["status"]) =>
     tracks.filter((track) => track.status === status).length;
+
+
+    if (selectedTrackId !== null) {
+      return (
+        <div className="app-shell">
+          <header className="topbar">
+            <div className="brand-icon">♫</div>
+            <span className="brand-name">TrackFlow</span>
+            <span className="brand-label">
+              Music Distribution
+            </span>
+          </header>
+
+          <main className="page-content">
+            <TrackDetail
+              trackId={selectedTrackId}
+              onBack={() => setSelectedTrackId(null)}
+            />
+          </main>
+        </div>
+      );
+    }
+
 
   return (
     <div className="app-shell">
@@ -199,9 +225,15 @@ function App() {
                     {filteredTracks.map((track) => (
                       <tr key={track.id}>
                         <td>
-                          <div className="track-title">
-                            {track.title}
-                          </div>
+                          
+                        <button
+                          type="button"
+                          className="track-link"
+                          onClick={() => setSelectedTrackId(track.id)}
+                        >
+                          {track.title}
+                        </button>
+
                           <div className="track-isrc">
                             ISRC: {track.isrc}
                           </div>

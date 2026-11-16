@@ -11,3 +11,18 @@ export interface Track {
   genre: string;
   status: TrackStatus;
 }
+
+
+export type DistributionStatus = "pending" | "live" | "rejected";
+
+export interface TrackDistribution {
+  id: number;
+  dspId: number;
+  dspName: string;
+  submittedAt: string;
+  status: DistributionStatus;
+}
+
+export interface TrackDetail extends Track {
+  distributions: TrackDistribution[];
+}
