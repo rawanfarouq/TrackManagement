@@ -2,35 +2,48 @@
 
 A full-stack music track management application developed for Takwene's Full-Stack Software Engineer technical assessment.
 
-The system manages artists, music tracks, and their distribution to Digital Service Providers (DSPs) such as Spotify, Apple Music, and YouTube.
+The system manages artists, music tracks, and their distribution to Digital Service Providers (DSPs), including Spotify, Apple Music, and YouTube.
 
 ## Tech Stack
 
 - **Backend:** ASP.NET Core Web API (.NET 10)
-- **Frontend:** React + TypeScript (planned)
+- **Frontend:** React, TypeScript, Vite
+- **Frontend Styling:** CSS
 - **Database:** Microsoft SQL Server 2022 Express
 - **ORM:** Entity Framework Core 10
-- **Authentication:** JWT (planned)
+- **Authentication:** JWT Bearer authentication
 - **API Testing:** Postman
 - **Version Control:** Git and GitHub
 
 ## Architecture
 
-The backend follows Clean Architecture, divided into four projects:
+The backend follows Clean Architecture and is divided into four projects:
 
 - **Domain:** Core entities, relationships, and status enums.
 - **Application:** Business logic, services, interfaces, DTOs, and input validation.
-- **Infrastructure:** SQL Server database access, EF Core, repositories, migrations, and database seeding.
-- **Api:** REST controllers, HTTP request handling, dependency injection, and authentication configuration.
+- **Infrastructure:** SQL Server database access, EF Core repositories, migrations, and database seeding.
+- **API:** REST controllers, HTTP request handling, dependency injection, authentication, and CORS configuration.
 
-### Backend Project Structure
+### Project Structure
 
 ```text
-backend/
-├── TrackManagement.Domain/
-├── TrackManagement.Application/
-├── TrackManagement.Infrastructure/
-└── TrackManagement.Api/
+TrackManagement/
+├── backend/
+│   ├── TrackManagement.Domain/
+│   ├── TrackManagement.Application/
+│   ├── TrackManagement.Infrastructure/
+│   └── TrackManagement.Api/
+├── frontend/
+│   ├── src/
+│   │   ├── services/
+│   │   ├── types/
+│   │   ├── App.tsx
+│   │   ├── App.css
+│   │   └── index.css
+│   └── package.json
+├── TrackManagement.slnx
+├── README.md
+└── DECISIONS.md
 ```
 
 ## Setup and Running Instructions
@@ -38,27 +51,28 @@ backend/
 ### Prerequisites
 
 - .NET 10 SDK
+- Node.js and npm
 - Microsoft SQL Server Express
 - SQL Server Management Studio (optional)
-- EF Core CLI Tools
+- EF Core CLI tools
 - Git
 - Postman (for API testing)
 
-### Database Setup
+### 1. Database Setup
 
 The application uses Microsoft SQL Server with Entity Framework Core.
 
-**Local Configuration**
+**Local development configuration:**
 
 - Server: `localhost\SQLEXPRESS`
 - Database: `TrackManagementDb`
 - Authentication: Windows Authentication
 
-Update the `DefaultConnection` connection string in `backend/TrackManagement.Api/appsettings.json` according to your local SQL Server configuration.
+Update the `DefaultConnection` connection string in `backend/TrackManagement.Api/appsettings.json` to match your local SQL Server configuration.
 
-The development configuration uses `TrustServerCertificate=True` for the local SQL Server instance only.
+The local development configuration uses `TrustServerCertificate=True` for the SQL Server Express instance. This is a development convenience, not a recommended production security setting.
 
-### Restore Dependencies
+### 2. Restore Backend Dependencies
 
 From the repository root:
 
@@ -67,21 +81,21 @@ dotnet restore
 dotnet tool restore
 ```
 
-### Apply Database Migrations
+### 3. Apply Database Migrations
 
 ```bash
 dotnet ef database update --project backend/TrackManagement.Infrastructure --startup-project backend/TrackManagement.Api --context TrackManagementDbContext
 ```
 
-This creates the database tables, relationships, indexes, and constraints if the migration has not already been applied.
+This applies the existing migration and creates the required tables, relationships, indexes, and constraints.
 
-### Build the Backend
+### 4. Build the Backend
 
 ```bash
 dotnet build
 ```
 
-### Run the Backend
+### 5. Run the Backend
 
 ```bash
 dotnet run --project backend/TrackManagement.Api
@@ -93,18 +107,94 @@ The API has been tested locally at:
 
 The actual port may vary depending on the launch configuration.
 
-### Database Seeding
+### 6. Install Frontend Dependencies
+
+Open another terminal at the repository root:
+
+```bash
+cd frontend
+npm install
+```
+
+### 7. Run the React Frontend
+
+```bash
+npm run dev
+```
+
+Open:
+
+`http://localhost:5173`
+
+Both the backend and frontend should be running for the React application to retrieve tracks from the database.
+
+### 8. Build the Frontend
+
+From the `frontend` directory:
+
+```bash
+npm run build
+```
+
+This runs TypeScript checks and generates the production frontend build.
+
+The frontend production build has been tested successfully.
+
+### CORS Configuration
+
+The backend includes a CORS policy allowing requests from the React development server at:
+
+`http://localhost:5173`
+
+The policy is configured in `backend/TrackManagement.Api/Program.cs`.
+
+If the frontend uses a different port or origin, the allowed origin must be updated accordingly.
+
+## Database Seeding
 
 In the Development environment, the application automatically seeds an initially empty database with:
 
 - 3 artists
 - 8 tracks across different genres and statuses
-- 3 DSPs (Spotify, Apple Music, YouTube)
-- 7 track distribution records
+- 3 DSPs: Spotify, Apple Music, and YouTube
+- 7 initial track distribution records
 
-The seeding logic checks for existing data to avoid inserting duplicate sample records during normal application restarts.
+The seeding logic checks for existing data to avoid repeatedly adding the initial sample records during normal restarts.
+
+Additional records may exist after API testing.
+
+## Domain Model
+
+The system contains four main entities:
+
+- **Artist:** Stores artist information such as name, email, and country.
+- **Track:** Stores track information, including title, artist, ISRC, release date, genre, and overall status.
+- **DSP:** Represents a digital music platform.
+- **TrackDistribution:** Connects a track to a DSP and stores its submission date and platform-specific status.
+
+An artist can own multiple tracks. A track can be submitted to multiple DSPs, and each DSP can receive multiple tracks.
+
+### Status Types
+
+**TrackStatus** represents a track's overall workflow:
+
+- `draft`
+- `submitted`
+- `distributed`
+
+**DistributionStatus** represents the status of a specific track on a specific DSP:
+
+- `pending`
+- `live`
+- `rejected`
+
+New tracks begin as `draft`. When a draft is submitted to one or more DSPs, its overall status changes to `submitted`, and each new distribution record begins as `pending`.
+
+The overall track status can also be updated through the PATCH status endpoint.
 
 ## Implemented API Endpoints
+
+All seven required API endpoints have been implemented and tested using Postman.
 
 | Method | Endpoint | Description | Status |
 |---|---|---|---|
@@ -113,8 +203,8 @@ The seeding logic checks for existing data to avoid inserting duplicate sample r
 | POST | `/api/tracks` | Create a track for an existing artist | Completed |
 | GET | `/api/tracks` | List tracks with optional filters | Completed |
 | GET | `/api/tracks/{id}` | Retrieve track details and DSP distribution statuses | Completed |
-| PATCH | `/api/tracks/{id}/status` | Update a track's status | Pending |
-| POST | `/api/tracks/{id}/distribute` | Submit a track to one or more DSPs | Pending |
+| PATCH | `/api/tracks/{id}/status` | Update a track's overall status | Completed |
+| POST | `/api/tracks/{id}/distribute` | Submit a track to one or more DSPs | Completed — JWT protected |
 
 ### Track Filtering
 
@@ -130,62 +220,52 @@ Example:
 GET /api/tracks?genre=Pop&status=distributed
 ```
 
-### Input Validation
+### Updating Track Status
 
-The API currently includes request validation for artists and tracks, including:
+```http
+PATCH /api/tracks/3/status
+Content-Type: application/json
+```
 
-- Required fields and maximum lengths
+```json
+{
+  "status": "submitted"
+}
+```
+
+### Distributing a Track
+
+```http
+POST /api/tracks/3/distribute
+Authorization: Bearer <your-development-token>
+Content-Type: application/json
+```
+
+```json
+{
+  "dspIds": [1, 2]
+}
+```
+
+The supplied DSP IDs must exist in the database, and duplicate track–DSP combinations are rejected.
+
+## Input Validation and Data Integrity
+
+The API includes:
+
+- Required-field validation
+- Maximum string-length validation
 - Email format validation
 - ISRC format validation
 - Artist existence checks
 - Duplicate ISRC checks
+- Track existence checks
+- Track status validation
+- DSP existence checks
+- Duplicate DSP ID validation
+- Duplicate track distribution checks
 
-Database-level unique indexes also help enforce data integrity.
-
-Additional error handling and security testing will be completed during the remaining implementation.
-
-## API Testing
-
-The implemented endpoints have been tested using Postman.
-
-Verified scenarios include:
-
-- Retrieving existing artists and tracks
-- Creating new artists and tracks
-- Retrieving individual track details
-- Retrieving DSP distribution statuses
-- Applying track filters
-- Rejecting invalid artist email input
-
-Further endpoint and edge-case testing will be performed as development continues.
-
-## Implementation Progress
-
-- [x] Clean Architecture project setup
-- [x] Domain entities and enums
-- [x] SQL Server integration using EF Core
-- [x] Initial database migration
-- [x] Development database seeding
-- [x] Artist DTOs, service, and repository
-- [x] Artist API endpoints
-- [x] Track DTOs, service, and repository
-- [x] Track creation, listing, filtering, and details endpoints
-- [x] Initial Postman testing
-- [x] All 7 required REST API endpoints
-- [x] JWT authentication and protected distribution endpoint
-- [x] Postman API testing
-- [ ] React frontend
-- [ ] Final security review and testing
-- [ ] Final documentation and submission
-
-## Frontend
-
-The React frontend will provide two main views:
-
-1. **Track List:** Displays tracks, artist names, genres, and statuses, with filtering by status.
-2. **Track Detail:** Displays track information and its distribution statuses across DSPs.
-
-Frontend setup and execution instructions will be added after implementation.
+Database-level unique indexes also enforce ISRC uniqueness and unique track–DSP combinations.
 
 ## JWT Authentication
 
@@ -203,7 +283,9 @@ From the repository root, run:
 dotnet user-jwts create --project backend/TrackManagement.Api --name LocalTester --valid-for 1d
 ```
 
-The command generates a local development JWT that can be used to test protected API endpoints.
+This generates a development JWT for local API testing.
+
+The development signing key is stored locally using .NET development tooling and must not be committed to GitHub.
 
 ### Using JWT in Postman
 
@@ -212,7 +294,7 @@ The command generates a local development JWT that can be used to test protected
 3. Paste the generated JWT into the Token field.
 4. Send the request with the selected DSP IDs.
 
-Example request body:
+Example:
 
 ```json
 {
@@ -220,17 +302,109 @@ Example request body:
 }
 ```
 
-### Authentication Testing
+### Authentication and Validation Testing
 
-The following scenarios were tested using Postman:
+The following scenarios were verified in Postman:
 
-- Valid JWT: `200 OK` for a valid distribution request.
-- Missing JWT: `401 Unauthorized`.
-- Duplicate distribution: `409 Conflict`.
-- Invalid DSP ID: `400 Bad Request`.
+| Scenario | HTTP Status |
+|---|---|
+| Valid JWT and valid distribution request | `200 OK` |
+| Missing JWT | `401 Unauthorized` |
+| Duplicate distribution | `409 Conflict` |
+| Invalid DSP ID | `400 Bad Request` |
 
-Development JWTs are intended for local testing only. The signing keys and generated tokens must not be committed to source control. A production application would require a proper authentication and user-management solution.
+Development JWTs are for local testing only. A production deployment would require a proper authentication and identity-management approach.
+
+## Frontend
+
+The frontend is built using React, TypeScript, and Vite.
+
+### Track List — Implemented
+
+The Track List dashboard currently provides:
+
+- Tracks retrieved from the ASP.NET Core API
+- Track titles and artist names
+- Genres and overall statuses
+- ISRC and release dates
+- Status filtering: All, Draft, Submitted, Distributed
+- Search by track title, artist, or genre
+- Summary cards showing counts by status
+- Responsive dashboard styling
+- Loading and error states
+
+The React application fetches data from:
+
+`GET /api/tracks`
+
+The search and status filter operate on the tracks already loaded into React state.
+
+### Track Detail — Pending
+
+The next frontend screen will display:
+
+- Selected track information
+- Related DSP distributions
+- Individual distribution statuses
+- Submission dates where available
+- Navigation back to the Track List
+
+It will use:
+
+`GET /api/tracks/{id}`
+
+## Testing
+
+### Backend
+
+The implemented endpoints were tested using Postman, including:
+
+- Creating artists and tracks
+- Retrieving artists and tracks
+- Filtering tracks
+- Retrieving track details and distributions
+- Updating track statuses
+- Distributing tracks to selected DSPs
+- Rejecting missing JWTs
+- Rejecting invalid DSP IDs
+- Rejecting duplicate distributions
+- Rejecting invalid artist email input
+
+### Frontend
+
+The React Track List has been tested in the browser with data returned from the running backend.
+
+The status dropdown and search field update the displayed tracks without a page reload.
+
+The frontend production build has also completed successfully.
+
+### Remaining Testing
+
+- Track Detail integration testing
+- Additional edge-case and security review
+- Improved handling of concurrent duplicate database operations
+- Final full-stack verification
+
+## Implementation Progress
+
+- [x] Clean Architecture solution setup
+- [x] Domain entities and enums
+- [x] SQL Server integration with EF Core
+- [x] Initial database migration
+- [x] Development database seeding
+- [x] All seven required REST API endpoints
+- [x] JWT-protected distribution endpoint
+- [x] Postman API testing
+- [x] React + TypeScript + Vite setup
+- [x] CORS configuration
+- [x] React Track List
+- [x] Status filtering and track search
+- [x] Dashboard styling
+- [x] Frontend production build
+- [ ] React Track Detail page
+- [ ] Final integration and security review
+- [ ] Final documentation review and submission
 
 ## Development Decisions
 
-See [DECISIONS.md](DECISIONS.md) for details about AI-assisted development, implementation decisions, security considerations, and issues identified and corrected during development.
+See [DECISIONS.md](DECISIONS.md) for information about AI-assisted development, implementation decisions, security considerations, and errors identified and corrected during development.
