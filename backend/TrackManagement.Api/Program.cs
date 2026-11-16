@@ -42,6 +42,18 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+//React frontend 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 // 3. Build the application AFTER registering services
 var app = builder.Build();
 
@@ -60,13 +72,17 @@ if (app.Environment.IsDevelopment())
 }
 
 
+
 app.UseHttpsRedirection();
+
+app.UseCors("ReactFrontend");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 
 // 5. Start the application
