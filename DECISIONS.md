@@ -10,22 +10,47 @@ I executed the setup commands, configured the solution and project references, i
 
 For the Domain layer, AI helped generate the initial entity classes (`Artist`, `Track`, `DSP`, and `TrackDistribution`) and status enums. I reviewed their properties, relationships, and navigation properties, including the purpose of ISRC and `ICollection<T>`, to understand how the entities relate to each other.
 
-I also initialized the Git repository and created commits to track development progress.
-
 AI also assisted with implementing the Infrastructure layer, including the EF Core DbContext, entity relationships, unique constraints, SQL Server configuration, migrations, and database seeding.
 
 I executed the migration commands and verified the resulting database schema and sample data using SQL Server Management Studio. I also reviewed the purpose of DbContext, DbSet, migrations, AddRange, and SaveChangesAsync to understand the implementation.
 
-The database was configured using SQL Server Express with Windows Authentication. Sample data is inserted only in the Development environment.
+For the Application and API layers, AI assisted in generating the Artist and Track DTOs, repository interfaces, repository implementations, services, and controllers.
 
-This section will be updated throughout implementation to distinguish AI-generated code from my own modifications.
+I reviewed the generated code, configured the required dependencies, resolved runtime issues, and tested the implemented API endpoints using Postman, including creating records, retrieving data, filtering tracks, and checking input validation.
+
+I also initialized the Git repository and maintained separate commits for major development milestones.
+
+This section will continue to be updated as implementation progresses, distinguishing AI-generated code from my own modifications.
 
 ## 2. What security issues did I identify in AI-generated code, and how did I handle them?
 
-To be completed after implementing and reviewing authentication, input validation, database constraints, and sensitive configuration.
+During development, I reviewed potential risks related to input validation, database integrity, and local configuration.
+
+The implementation currently includes Data Annotation validation for API requests and database-level unique indexes to prevent duplicate ISRC values and track/DSP combinations.
+
+I also used Windows Authentication for the local SQL Server connection. The configuration includes `TrustServerCertificate=True` for local development, which should not be used as a general production security configuration.
+
+Further security review will be completed when implementing JWT authentication, authorization, and additional API error handling.
 
 ## 3. What did AI get wrong that I had to fix, and why?
 
-During implementation, the API initially failed at runtime because the dependency injection services were registered after builder.Build().
+One issue I encountered in the AI-assisted implementation was that the required Dependency Injection registrations for the Track service and repository were missing from `Program.cs`.
 
-I inspected Program.cs, identified the incorrect initialization order, and moved the service registrations before builder.Build(). After the correction, I successfully started the API and tested the Artist endpoints using Postman.
+The project built successfully, but when I ran the application and tested the Track API using Postman, the request failed with a `500 Internal Server Error`.
+
+After inspecting the terminal logs, I identified the error:
+
+`Unable to resolve service for type 'ITrackService' while attempting to activate 'TracksController'.`
+
+I reviewed `Program.cs` and found that the `ITrackService` and `ITrackRepository` implementations had not been registered with the Dependency Injection container.
+
+I corrected the issue by adding the missing registrations before `builder.Build()`:
+
+```csharp
+builder.Services.AddScoped<ITrackRepository, TrackRepository>();
+builder.Services.AddScoped<ITrackService, TrackService>();
+```
+
+After rebuilding and restarting the application, I tested the Track endpoints again using Postman, and they worked successfully.
+
+This experience showed me that AI-generated implementations should not be assumed to be complete, and that successful compilation alone does not guarantee correct runtime behavior. Reviewing error logs and testing the actual endpoints helped me identify and resolve the problem.

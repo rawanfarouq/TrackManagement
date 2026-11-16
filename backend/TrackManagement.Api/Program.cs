@@ -26,6 +26,11 @@ builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 // Register application services
 builder.Services.AddScoped<IArtistService, ArtistService>();
 
+// Track registrations
+builder.Services.AddScoped<ITrackRepository, TrackRepository>();
+builder.Services.AddScoped<ITrackService, TrackService>();
+
+
 // Register controllers and OpenAPI
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
