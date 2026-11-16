@@ -19,14 +19,65 @@ The backend follows Clean Architecture, divided into four projects:
 - **Infrastructure:** Database access and EF Core implementation.
 - **Api:** REST endpoints, controllers, and authentication.
 
-## Current Progress
-
-- [x] .NET solution and Clean Architecture setup
-- [x] Domain entities and status enums
-- [ ] EF Core and SQL Server integration
-- [ ] REST API and JWT authentication
-- [ ] React frontend
 
 ## Setup and Running Instructions
 
 Detailed setup, database migrations, API execution, frontend execution, and JWT token instructions will be added during implementation.
+
+## Database Setup
+
+The application uses Microsoft SQL Server with Entity Framework Core 10.
+
+### Local Configuration
+
+The development database uses SQL Server Express:
+
+- Server: `localhost\SQLEXPRESS`
+- Database: `TrackManagementDb`
+- Authentication: Windows Authentication
+
+Update the `DefaultConnection` connection string in `backend/TrackManagement.Api/appsettings.json` for your local environment. The example configuration uses `TrustServerCertificate=True` for local development only.
+
+### Install EF Core CLI Tools
+
+From the repository root:
+
+```bash
+dotnet tool restore
+```
+
+### Apply Database Migrations
+
+```bash
+dotnet ef database update --project backend/TrackManagement.Infrastructure --startup-project backend/TrackManagement.Api --context TrackManagementDbContext
+```
+
+This creates the database and its tables if they do not already exist.
+
+### Run the Backend
+
+```bash
+dotnet run --project backend/TrackManagement.Api
+```
+
+In the Development environment, the application seeds the empty database with:
+
+- 3 artists
+- 8 tracks across different genres and statuses
+- 3 DSPs (Spotify, Apple Music, YouTube)
+- 7 track distribution records
+
+Sample data is inserted automatically when the API starts against an empty database.
+
+## Implementation Progress
+
+- [x] Clean Architecture project setup
+- [x] Domain entities and enums
+- [x] SQL Server integration using EF Core
+- [x] Initial database migration
+- [x] Development database seeding
+- [ ] Application services and DTOs
+- [ ] REST API endpoints
+- [ ] JWT authentication
+- [ ] React frontend
+- [ ] Final testing and documentation

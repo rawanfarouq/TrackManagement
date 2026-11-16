@@ -12,6 +12,12 @@ For the Domain layer, AI helped generate the initial entity classes (`Artist`, `
 
 I also initialized the Git repository and created commits to track development progress.
 
+AI also assisted with implementing the Infrastructure layer, including the EF Core DbContext, entity relationships, unique constraints, SQL Server configuration, migrations, and database seeding.
+
+I executed the migration commands and verified the resulting database schema and sample data using SQL Server Management Studio. I also reviewed the purpose of DbContext, DbSet, migrations, AddRange, and SaveChangesAsync to understand the implementation.
+
+The database was configured using SQL Server Express with Windows Authentication. Sample data is inserted only in the Development environment.
+
 This section will be updated throughout implementation to distinguish AI-generated code from my own modifications.
 
 ## 2. What security issues did I identify in AI-generated code, and how did I handle them?
