@@ -198,19 +198,6 @@ All seven required endpoints have been implemented.
 | POST | `/api/tracks/{id}/distribute` | Distribute a track to selected DSPs — JWT protected |
 | PATCH | `/api/tracks/{id}/status` | Update the overall track status |
 
-### Track Filtering
-
-The GET tracks endpoint supports optional filters:
-
-- `artistId`
-- `genre`
-- `status`
-
-Example:
-
-```http
-GET /api/tracks?genre=Pop&status=distributed
-```
 
 ### Update Track Status
 
